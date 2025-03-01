@@ -12,6 +12,10 @@ zip_name = st.text_input("Ingrese el nombre deseado para el zip", "vacaciones.zi
 if st.button("Procesar"):
     if "{dni}" not in file_name_template:
         st.warning("El nombre de archivo debe contener {dni}.")
+    if not file_name_template.endswith(".pdf"):
+        st.warning("El nombre de archivo debe terminar en .pdf.")
+    if not zip_name.endswith(".zip"):
+        st.warning("El nombre del zip debe terminar en .zip.")
     elif uploaded_files:
         all_generated_files = []
         last_cuil = None
