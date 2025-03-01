@@ -3,13 +3,13 @@ from io import BytesIO
 import zipfile
 from script import extract_cuil, split_pdf, zip_pdfs
 
-st.title('PDF Processor')
+st.title('Procesador de archivos PDF')
 
-uploaded_files = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
-file_name_template = st.text_input("Enter the filename template (use {cuil} for CUIL)", "{cuil}_Recibos_Gratificacion_2025-02.pdf")
-zip_name = st.text_input("Enter the name for the final zip file", "vacaciones.zip")
+uploaded_files = st.file_uploader("Subir Archivos PDF", type="pdf", accept_multiple_files=True)
+file_name_template = st.text_input("Ingrese el nombre deseado de cada PDF.", "{cuil}_Recibos_Vacaciones_2025-02.pdf")
+zip_name = st.text_input("Ingrese el nombre deseado para el zip", "vacaciones.zip")
 
-if st.button("Process and Download"):
+if st.button("Procesar"):
     if uploaded_files:
         all_generated_files = []
         last_cuil = None
@@ -24,10 +24,10 @@ if st.button("Process and Download"):
         zip_buffer.seek(0)
 
         st.download_button(
-            label="Download ZIP",
+            label="Descargar ZIP",
             data=zip_buffer,
             file_name=zip_name,
             mime="application/zip"
         )
     else:
-        st.warning("Please upload at least one PDF file.")
+        st.warning("Por favor suba al menos un archivo PDF.")
