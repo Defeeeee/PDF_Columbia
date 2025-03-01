@@ -10,7 +10,9 @@ file_name_template = st.text_input("Ingrese el nombre deseado de cada PDF.", "{d
 zip_name = st.text_input("Ingrese el nombre deseado para el zip", "vacaciones.zip")
 
 if st.button("Procesar"):
-    if uploaded_files:
+    if "{dni}" not in file_name_template:
+        st.warning("El nombre de archivo debe contener {dni}.")
+    elif uploaded_files:
         all_generated_files = []
         last_cuil = None
 
