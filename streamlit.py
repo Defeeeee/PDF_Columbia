@@ -21,6 +21,7 @@ if st.button("Procesar"):
             generated_files, last_cuil = split_pdf(pdf_bytes, last_cuil, file_name_template.replace("{dni}", "{cuil}"))
             if not generated_files:
                 st.warning("No se encontraron CUILs/DNIs en el archivo.")
+                break
             all_generated_files.extend(generated_files)
 
         zip_buffer = BytesIO()
