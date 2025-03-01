@@ -19,20 +19,20 @@ if st.button("Procesar"):
         for uploaded_file in uploaded_files:
             pdf_bytes = BytesIO(uploaded_file.read())
             generated_files, last_cuil = split_pdf(pdf_bytes, last_cuil, file_name_template.replace("{dni}", "{cuil}"))
-            if not generated_files:
-                st.warning("No se encontraron CUILs/DNIs en el archivo.")
-                break
             all_generated_files.extend(generated_files)
 
-        zip_buffer = BytesIO()
-        zip_pdfs(all_generated_files, zip_buffer)
-        zip_buffer.seek(0)
+        if len(all_generated_files) > 0:
+            zip_buffer = BytesIO()
+            zip_pdfs(all_generated_files, zip_buffer)
+            zip_buffer.seek(0)
 
-        st.download_button(
-            label="Descargar ZIP",
-            data=zip_buffer,
-            file_name=zip_name,
-            mime="application/zip"
-        )
+            st.download_button(
+                label="Descargar ZIP",
+                data=zip_buffer,
+                file_name=zip_name,
+                mime="application/zip"
+            )
+        else:
+            st.warning("No se encontraron CUILs en los archivos PDF.")
     else:
         st.warning("Por favor suba al menos un archivo PDF.")
