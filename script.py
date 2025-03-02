@@ -1,3 +1,9 @@
+import PyPDF2
+import re
+import zipfile
+import os
+from io import BytesIO
+
 def extract_cuil(text, last_cuil, regex_pattern):
     matches = re.findall(regex_pattern, text)
     for match in matches:
