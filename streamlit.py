@@ -9,8 +9,8 @@ uploaded_files = st.file_uploader("Subir Archivos PDF", type="pdf", accept_multi
 file_name_template = st.text_input("Ingrese el nombre deseado de cada PDF.", "{dni}_Recibos_Vacaciones_2025-02.pdf")
 zip_name = st.text_input("Ingrese el nombre deseado para el zip", "vacaciones.zip")
 
-show_advanced = st.checkbox("Mostrar opciones avanzadas")
-if show_advanced:
+advanced_option = st.selectbox("Opciones avanzadas", ["No mostrar", "Mostrar"])
+if advanced_option == "Mostrar":
     regex_pattern = st.text_input("Ingrese el patrón de regex para CUIL", r'\b\d{2}-(\d{8})-\d\b')
 else:
     regex_pattern = r'\b\d{2}-(\d{8})-\d\b'
