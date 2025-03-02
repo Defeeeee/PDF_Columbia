@@ -1,6 +1,7 @@
 import streamlit as st
 from io import BytesIO
 import zipfile
+import re
 from script import extract_cuil, split_pdf, zip_pdfs
 
 st.title('Procesador de archivos PDF')
@@ -11,6 +12,12 @@ zip_name = st.text_input("Ingrese el nombre deseado para el zip", "vacaciones.zi
 
 with st.expander("Opciones avanzadas"):
     regex_pattern = st.text_input("Ingrese el patrón de regex para CUIL", r'\b\d{2}-(\d{8})-\d\b')
+    try:
+        re.compile(regex_pattern)
+        regex_valid = True
+    except re.error:
+        st.warning("El patrón de regex no es válido.")
+        regex_valid = False
 
 if st.button("Procesar"):
     if "{dni}" not in file_name_template:
@@ -19,6 +26,8 @@ if st.button("Procesar"):
         st.warning("El nombre de archivo debe terminar en .pdf.")
     if not zip_name.endswith(".zip"):
         st.warning("El nombre del zip debe terminar en .zip.")
+    elif not regex_valid:
+        st.warning("Por favor ingrese un patrón de regex válido.")
     elif uploaded_files:
         all_generated_files = []
         last_cuil = None
