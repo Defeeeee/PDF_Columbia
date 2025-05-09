@@ -4,14 +4,14 @@ import zipfile
 import os
 from io import BytesIO
 
-def extract_cuil(text, last_cuil):
-    matches = re.findall(r'\b\d{2}-(\d{8})-\d\b', text)
+def extract_cuil(text, last_cuil, regex_pattern=r'\b\d{2}-(\d{8})-\d\b', exclude_match='51763749'):
+    matches = re.findall(regex_pattern, text)
     for match in matches:
-        if match != '51763749' and match != last_cuil:
+        if match != exclude_match and match != last_cuil:
             return match
     return None
 
-def split_pdf(input_pdf, last_cuil=None, file_name_template="{cuil}_Recibos_Gratificacion_2025-02.pdf", look_ahead_pages=0):
+def split_pdf(input_pdf, last_cuil=None, file_name_template="{cuil}_Recibos_Gratificacion_2025-02.pdf", regex_pattern=r'\b\d{2}-(\d{8})-\d\b', exclude_match='51763749', look_ahead_pages=0):
     generated_files = []
     reader = PyPDF2.PdfReader(input_pdf)
     num_pages = len(reader.pages)
@@ -22,7 +22,7 @@ def split_pdf(input_pdf, last_cuil=None, file_name_template="{cuil}_Recibos_Grat
     while i < num_pages:
         page = reader.pages[i]
         text = page.extract_text()
-        cuil = extract_cuil(text, last_cuil)
+        cuil = extract_cuil(text, last_cuil, regex_pattern, exclude_match)
 
         if cuil:
             # Found a new CUIL, create a new PDF
@@ -48,7 +48,7 @@ def split_pdf(input_pdf, last_cuil=None, file_name_template="{cuil}_Recibos_Grat
                     if i + j < num_pages:
                         ahead_page = reader.pages[i + j]
                         ahead_text = ahead_page.extract_text()
-                        ahead_cuil = extract_cuil(ahead_text, last_cuil)
+                        ahead_cuil = extract_cuil(ahead_text, last_cuil, regex_pattern, exclude_match)
                         if ahead_cuil:
                             has_cuil_ahead = True
                             break
