@@ -28,7 +28,7 @@ if st.button("Procesar"):
     if not zip_name.endswith(".zip"):
         st.warning("El nombre del zip debe terminar en .zip.")
     elif not regex_valid:
-        st.warning("Por favor ingrese un patrón de regex válido.")
+        st.warning("Por favor ingrese un patrón de regex válido. ")
     elif uploaded_files:
         all_generated_files = []
         last_cuil = None
