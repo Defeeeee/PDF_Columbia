@@ -13,6 +13,7 @@ zip_name = st.text_input("Ingrese el nombre deseado para el zip", "vacaciones.zi
 with st.expander("Opciones avanzadas"):
     regex_pattern = st.text_input("Ingrese el patrón de regex para CUIL", r'\b\d{2}-(\d{8})-\d\b')
     exclude_match = st.text_input("Ingrese el valor a excluir", "51763749")
+    extra_pages = st.number_input("Número de páginas adicionales sin CUIL a incluir", min_value=0, value=0, step=1, help="Incluir páginas adicionales sin CUIL después de una página con CUIL")
     try:
         re.compile(regex_pattern)
         regex_valid = True
@@ -35,7 +36,7 @@ if st.button("Procesar"):
 
         for uploaded_file in uploaded_files:
             pdf_bytes = BytesIO(uploaded_file.read())
-            generated_files, last_cuil = split_pdf(pdf_bytes, last_cuil, file_name_template.replace("{dni}", "{cuil}"), regex_pattern, exclude_match)
+            generated_files, last_cuil = split_pdf(pdf_bytes, last_cuil, file_name_template.replace("{dni}", "{cuil}"), regex_pattern, exclude_match, extra_pages)
             all_generated_files.extend(generated_files)
 
         if len(all_generated_files) > 0:
