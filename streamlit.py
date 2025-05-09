@@ -9,12 +9,12 @@ st.title('Procesador de archivos PDF')
 uploaded_files = st.file_uploader("Subir Archivos PDF", type="pdf", accept_multiple_files=True)
 file_name_template = st.text_input("Ingrese el nombre deseado de cada PDF.", "{dni}_Recibos_Vacaciones_2025-02.pdf")
 zip_name = st.text_input("Ingrese el nombre deseado para el zip", "vacaciones.zip")
-look_ahead_pages = st.number_input("Number of pages to look ahead for CUIL detection", min_value=0, value=0, step=1,
-                                  help="If a page doesn't have a CUIL, check this many pages ahead. If none of them have a CUIL, associate the page with the last detected CUIL.")
 
 with st.expander("Opciones avanzadas"):
     regex_pattern = st.text_input("Ingrese el patrón de regex para CUIL", r'\b\d{2}-(\d{8})-\d\b')
     exclude_match = st.text_input("Ingrese el valor a excluir", "51763749")
+    look_ahead_pages = st.number_input("Number of pages to look ahead for CUIL detection", min_value=0, value=0, step=1, help="If a page doesn't have a CUIL, check this many pages ahead. If none of them have a CUIL, associate the page with the last detected CUIL.")
+
     try:
         re.compile(regex_pattern)
         regex_valid = True
