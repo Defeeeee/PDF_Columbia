@@ -26,14 +26,33 @@ def split_pdf(input_pdf, last_cuil=None, file_name_template="{cuil}_Recibos_Grat
     Returns:
         A tuple containing a list of (filename, PdfWriter) pairs and the last CUIL processed
     """
+    # Handle different input types
+    if isinstance(input_pdf, str):
+        # If input_pdf is a file path
+        with open(input_pdf, 'rb') as file:
+            pdf_data = file.read()
+    else:
+        # If input_pdf is a BytesIO object
+        input_pdf.seek(0)
+        pdf_data = input_pdf.read()
+
+    # Create a new BytesIO object with the PDF data
+    pdf_stream = BytesIO(pdf_data)
+    reader = PyPDF2.PdfReader(pdf_stream)
+
+    # Process the PDF
+    return _process_pdf(reader, last_cuil, file_name_template, regex_pattern, exclude_match, extra_pages)
+
+def _process_pdf(reader, last_cuil, file_name_template, regex_pattern, exclude_match, extra_pages):
+    """Helper function to process the PDF and split it into multiple files."""
     generated_files = []
-    reader = PyPDF2.PdfReader(input_pdf)
     num_pages = len(reader.pages)
 
     # Initialize variables
     i = 0
     current_pdf = None
-    current_filename = None
+    current_cuil = None
+    page_indices = []
 
     # Process each page in the PDF
     while i < num_pages:
@@ -44,15 +63,18 @@ def split_pdf(input_pdf, last_cuil=None, file_name_template="{cuil}_Recibos_Grat
 
         if cuil:
             # Found a CUIL, start a new PDF
-            if current_pdf is not None:
+            if current_pdf is not None and current_cuil is not None:
                 # Add the previous PDF to the list of generated files
-                generated_files.append((current_filename, current_pdf))
+                filename = file_name_template.format(cuil=current_cuil)
+                generated_files.append((filename, current_pdf))
 
             # Create a new PDF
             current_pdf = PyPDF2.PdfWriter()
+            # Add the page with CUIL
             current_pdf.add_page(page)
-            current_filename = file_name_template.format(cuil=cuil)
+            current_cuil = cuil
             last_cuil = cuil
+            page_indices = [i]
 
             # Move to the next page
             i += 1
@@ -70,6 +92,7 @@ def split_pdf(input_pdf, last_cuil=None, file_name_template="{cuil}_Recibos_Grat
 
                 # Add this page to the current PDF
                 current_pdf.add_page(next_page)
+                page_indices.append(i)
                 extra_count += 1
                 i += 1
         else:
@@ -88,13 +111,15 @@ def split_pdf(input_pdf, last_cuil=None, file_name_template="{cuil}_Recibos_Grat
                 if not has_cuil_ahead:
                     # No CUIL ahead, add this page to the current PDF
                     current_pdf.add_page(page)
+                    page_indices.append(i)
 
             # Move to the next page
             i += 1
 
     # Add the last PDF to the list if it exists
-    if current_pdf is not None:
-        generated_files.append((current_filename, current_pdf))
+    if current_pdf is not None and current_cuil is not None:
+        filename = file_name_template.format(cuil=current_cuil)
+        generated_files.append((filename, current_pdf))
 
     return generated_files, last_cuil
 
